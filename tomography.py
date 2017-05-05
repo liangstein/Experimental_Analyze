@@ -13,6 +13,12 @@ base1=np.kron(H,H);base2=np.kron(H,V);base3=np.kron(V,V);base4=np.kron(V,H);
 base5=np.kron(R,H);base6=np.kron(R,V);base7=np.kron(D,V);base8=np.kron(D,H);
 base9=np.kron(D,R);base10=np.kron(D,D);base11=np.kron(R,D);base12=np.kron(H,D);
 base13=np.kron(V,D);base14=np.kron(V,L);base15=np.kron(H,L);base16=np.kron(R,L);
+def concurrence(rho):
+    a1,a2=LA.eig(rho);
+    a1=sorted(a1);
+    C=max(0,a1[-1]-a1[-2]-a1[-3]-a1[-4]);
+    return C;
+
 def rho(t):
     T=np.matrix([[t[0],0,0,0],
                       [t[4]+1j*t[5],t[1],0,0],
@@ -58,7 +64,7 @@ def Log_likelihood(t):
     return L1+L2+L3+L4+L5+L6+L7+L8+L9+L10+L11+L12+L13+L14+L15+L16;
 
 t0=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.1,0.1,0.2,0.3,0.1,0.2,0.3,0.1];#t序列初始值
-res=minimize(Log_likelihood,t0,method='L-BFGS-B');
+res=minimize(Log_likelihood,t0,method='BFGS');
 rho_re=rho(res.x);#重建后的密度矩阵
 a1,a2=LA.eig(rho_re);
 real=np.zeros((4,4));image=np.zeros((4,4));
@@ -67,6 +73,7 @@ for i in np.arange(0,4):
         real[i,j]=rho_re[i,j].real;
         image[i,j]=rho_re[i,j].imag;
 
+concurrence(rho_re);
 #array([[ 0.50322366, -0.02077412, -0.02437523,  0.46619939],
 #       [-0.02077412,  0.00520623,  0.00406566, -0.03202184],
 #       [-0.02437523,  0.00406566,  0.00723096, -0.03918401],
